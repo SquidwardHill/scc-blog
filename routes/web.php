@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
 
@@ -24,7 +25,8 @@ Route::get('/', function () {
     return view('posts', [
         //by default, laravel will lazy load all the relationships. Why execute a query to fetch all the relationships if you are never going to execute them?
         //'posts' => Post::all()
-        'posts' => Post::with('category')->get()
+        //latest adds the orderBy constraint behind the scenes
+        'posts' => Post::latest()->with('category', 'author')->get()
     ]);
 });
 
@@ -47,5 +49,16 @@ Route::get('/categories/{category:slug}', function (Category $category){
         //eloquent relationships in the model.
 
         'posts' => $category->posts
+    ]);
+});
+
+//define the key with :username (as opposed to using id)
+Route::get('/authors/{author:username}', function (User $author){
+    return view('posts', [
+        //see user model, posts method.
+        'posts' => $author->posts
+
+        //if you want to turn eager loading off when its set in the model, you can use 'without'
+        //'posts' => $author->posts->without(['category', 'author']);
     ]);
 });

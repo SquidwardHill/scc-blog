@@ -14,6 +14,9 @@ class Post extends Model
 
     protected $fillable = ['title', 'excerpt', 'body', 'slug', 'category_id'];
 
+    //always eager load with the following models
+    protected $with = ['category', 'author'];
+
     public function category(): BelongsTo
     {
         //hasOne, hasMany, belongsTo, BelongsToMany
@@ -21,7 +24,9 @@ class Post extends Model
     }
 
     //    $post->user;
-    public function user(){
-        return $this->belongsTo(User::class);
+    // Laravel makes assumptions using the name of the method, looking for that foreign key.
+    //so here it would look for author_id (which isn't a columm the user.)
+    public function author(){
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
